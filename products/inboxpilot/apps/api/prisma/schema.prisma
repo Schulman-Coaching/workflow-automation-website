@@ -1,0 +1,318 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Organizations (Tenants)
+model Organization {
+  id               String   @id @default(uuid())
+  name             String
+  slug             String   @unique
+  planId           String?  @map("plan_id")
+  stripeCustomerId String?  @map("stripe_customer_id")
+  settings         Json     @default("{}")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  plan          Plan?          @relation(fields: [planId], references: [id])
+  subscription  Subscription?
+  users         User[]
+  emailAccounts EmailAccount[]
+  emails        Email[]
+  emailThreads  EmailThread[]
+  emailDrafts   EmailDraft[]
+  contacts      Contact[]
+  aiPrompts     AIPrompt[]
+  usageRecords  UsageRecord[]
+
+  @@map("organizations")
+}
+
+// Users
+model User {
+  id             String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  email          String
+  passwordHash   String   @map("password_hash")
+  name           String?
+  role           String   @default("member")
+  avatarUrl      String?  @map("avatar_url")
+  settings       Json     @default("{}")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  emailAccounts EmailAccount[]
+  emailDrafts   EmailDraft[]
+  followUpRules FollowUpRule[]
+  refreshTokens RefreshToken[]
+
+  @@unique([organizationId, email])
+  @@map("users")
+}
+
+// Email Accounts (Connected Gmail/Outlook)
+model EmailAccount {
+  id                    String    @id @default(uuid())
+  userId                String    @map("user_id")
+  organizationId        String    @map("organization_id")
+  provider              String
+  emailAddress          String    @map("email_address")
+  accessTokenEncrypted  String    @map("access_token_encrypted")
+  refreshTokenEncrypted String    @map("refresh_token_encrypted")
+  tokenExpiresAt        DateTime? @map("token_expires_at")
+  syncState             Json      @default("{}") @map("sync_state")
+  lastSyncedAt          DateTime? @map("last_synced_at")
+  isActive              Boolean   @default(true) @map("is_active")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  emails       Email[]
+  threads      EmailThread[]
+  drafts       EmailDraft[]
+
+  @@unique([organizationId, emailAddress])
+  @@map("email_accounts")
+}
+
+// Emails
+model Email {
+  id              String    @id @default(uuid())
+  organizationId  String    @map("organization_id")
+  emailAccountId  String    @map("email_account_id")
+  providerId      String    @map("provider_id")
+  threadId        String?   @map("thread_id")
+  subject         String?
+  snippet         String?
+  bodyText        String?   @map("body_text")
+  bodyHtml        String?   @map("body_html")
+  fromAddress     String?   @map("from_address")
+  fromName        String?   @map("from_name")
+  toAddresses     Json      @default("[]") @map("to_addresses")
+  ccAddresses     Json      @default("[]") @map("cc_addresses")
+  bccAddresses    Json      @default("[]") @map("bcc_addresses")
+  receivedAt      DateTime  @map("received_at")
+  isRead          Boolean   @default(false) @map("is_read")
+  isStarred       Boolean   @default(false) @map("is_starred")
+  hasAttachments  Boolean   @default(false) @map("has_attachments")
+  labels          Json      @default("[]")
+  aiCategory      String?   @map("ai_category")
+  aiPriority      Int?      @map("ai_priority")
+  aiSummary       String?   @map("ai_summary")
+  aiSuggestedAction String? @map("ai_suggested_action")
+  aiProcessedAt   DateTime? @map("ai_processed_at")
+  followUpStatus  String    @default("none") @map("follow_up_status")
+  followUpDueAt   DateTime? @map("follow_up_due_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  emailAccount EmailAccount @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+  thread       EmailThread? @relation(fields: [threadId], references: [id])
+  drafts       EmailDraft[] @relation("ReplyToEmail")
+
+  @@unique([organizationId, emailAccountId, providerId])
+  @@index([organizationId, emailAccountId])
+  @@index([organizationId, receivedAt(sort: Desc)])
+  @@index([organizationId, aiCategory])
+  @@index([organizationId, follow_up_status, follow_up_due_at])
+  @@map("emails")
+}
+
+// Email Threads
+model EmailThread {
+  id                   String    @id @default(uuid())
+  organizationId       String    @map("organization_id")
+  emailAccountId       String    @map("email_account_id")
+  providerThreadId     String    @map("provider_thread_id")
+  subject              String?
+  lastMessageAt        DateTime? @map("last_message_at")
+  messageCount         Int       @default(0) @map("message_count")
+  participantAddresses Json      @default("[]") @map("participant_addresses")
+  aiCategory           String?   @map("ai_category")
+  aiPriority           Int?      @map("ai_priority")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  emailAccount EmailAccount @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+  emails       Email[]
+
+  @@unique([organizationId, emailAccountId, providerThreadId])
+  @@index([organizationId, lastMessageAt(sort: Desc)])
+  @@map("email_threads")
+}
+
+// Email Drafts
+model EmailDraft {
+  id              String    @id @default(uuid())
+  organizationId  String    @map("organization_id")
+  userId          String    @map("user_id")
+  emailAccountId  String    @map("email_account_id")
+  replyToEmailId  String?   @map("reply_to_email_id")
+  toAddresses     Json      @default("[]") @map("to_addresses")
+  ccAddresses     Json      @default("[]") @map("cc_addresses")
+  subject         String?
+  bodyText        String?   @map("body_text")
+  bodyHtml        String?   @map("body_html")
+  aiGenerated     Boolean   @default(false) @map("ai_generated")
+  aiPromptUsed    String?   @map("ai_prompt_used")
+  aiVersion       Int       @default(1) @map("ai_version")
+  status          String    @default("draft")
+  sentAt          DateTime? @map("sent_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailAccount EmailAccount  @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+  replyToEmail Email?        @relation("ReplyToEmail", fields: [replyToEmailId], references: [id])
+
+  @@map("email_drafts")
+}
+
+// Follow-Up Rules
+model FollowUpRule {
+  id            String   @id @default(uuid())
+  organizationId String  @map("organization_id")
+  userId        String   @map("user_id")
+  name          String?
+  conditions    Json
+  followUpDays  Int      @default(3) @map("follow_up_days")
+  reminderTemplate String? @map("reminder_template")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("follow_up_rules")
+}
+
+// Contacts
+model Contact {
+  id                 String    @id @default(uuid())
+  organizationId     String    @map("organization_id")
+  emailAddress       String    @map("email_address")
+  name               String?
+  company            String?
+  lastContactedAt    DateTime? @map("last_contacted_at")
+  contactFrequency   Int       @default(0) @map("contact_frequency")
+  aiRelationshipType String?   @map("ai_relationship_type")
+  metadata           Json      @default("{}")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, emailAddress])
+  @@map("contacts")
+}
+
+// AI Prompts (Customizable per tenant)
+model AIPrompt {
+  id                 String   @id @default(uuid())
+  organizationId     String?  @map("organization_id")
+  promptType         String   @map("prompt_type")
+  name               String?
+  systemPrompt       String   @map("system_prompt")
+  userPromptTemplate String   @map("user_prompt_template")
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("ai_prompts")
+}
+
+// Subscription Plans
+model Plan {
+  id                 String   @id @default(uuid())
+  name               String
+  priceMonthly       Int      @map("price_monthly")
+  priceYearly        Int      @map("price_yearly")
+  maxEmailAccounts   Int      @default(1) @map("max_email_accounts")
+  maxUsers           Int      @default(1) @map("max_users")
+  aiRequestsPerMonth Int      @default(1000) @map("ai_requests_per_month")
+  features           Json     @default("{}")
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  // Relations
+  organizations Organization[]
+
+  @@map("plans")
+}
+
+// Usage Tracking
+model UsageRecord {
+  id                  String   @id @default(uuid())
+  organizationId      String   @map("organization_id")
+  periodStart         DateTime @map("period_start")
+  periodEnd           DateTime @map("period_end")
+  aiRequestsCount     Int      @default(0) @map("ai_requests_count")
+  emailsSyncedCount   Int      @default(0) @map("emails_synced_count")
+  draftsGeneratedCount Int     @default(0) @map("drafts_generated_count")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("usage_records")
+}
+
+// Refresh Tokens for rotation/revocation
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// Subscriptions
+model Subscription {
+  id                     String    @id @default(uuid())
+  organizationId         String    @unique @map("organization_id")
+  stripeSubscriptionId   String    @unique @map("stripe_subscription_id")
+  stripePriceId          String    @map("stripe_price_id")
+  status                 String    // active, canceled, past_due, trialing, etc.
+  currentPeriodStart     DateTime  @map("current_period_start")
+  currentPeriodEnd       DateTime  @map("current_period_end")
+  cancelAtPeriodEnd      Boolean   @default(false) @map("cancel_at_period_end")
+  canceledAt             DateTime? @map("canceled_at")
+  trialStart             DateTime? @map("trial_start")
+  trialEnd               DateTime? @map("trial_end")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}

@@ -1,0 +1,34 @@
+---
+description: Patterns for incremental email synchronization using delta tokens.
+globs: ["**/src/email/**/*.ts", "**/worker/processors/email-sync.processor.ts"]
+---
+
+# Delta Sync Standards
+
+To ensure scalability and reduce provider API costs, always prefer incremental (delta) synchronization over full history polling.
+
+## Rules
+
+- **Sync Tokens**: Store provider-specific sync tokens or delta links in the `EmailAccount.syncState` JSON field.
+- **Incremental Sync**: Use the stored sync token to request only changes since the last sync.
+- **Full Sync Fallback**: Implement a fallback to full sync if the delta token is expired, invalid, or missing.
+- **Batching**: Process synced emails in batches to avoid memory issues and respect provider rate limits.
+- **Atomic Updates**: Update the `lastSyncedAt` and the sync token only after a successful batch processing.
+
+## Examples
+
+### Sync Logic Pattern
+```typescript
+const syncState = account.syncState as any;
+const deltaResult = await provider.getDeltaChanges(accessToken, syncState.nextDeltaLink);
+
+// Process changes...
+
+await prisma.emailAccount.update({
+  where: { id: account.id },
+  data: {
+    syncState: { ...syncState, nextDeltaLink: deltaResult.nextDeltaLink },
+    lastSyncedAt: new Date(),
+  },
+});
+```
