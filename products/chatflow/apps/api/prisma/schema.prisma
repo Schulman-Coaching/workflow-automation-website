@@ -7,6 +7,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Organizations (Tenants) - Mirrored from InboxPilot for future unification
+model Organization {
+  id               String   @id @default(uuid())
+  name             String
+  slug             String   @unique
+  settings         Json     @default("{}")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  users            User[]
+  whatsappAccounts WhatsAppAccount[]
+  automationRules  AutomationRule[]
+
+  @@map("organizations")
+}
+
+// Users - Mirrored from InboxPilot
+model User {
+  id             String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  email          String
+  passwordHash   String   @map("password_hash")
+  name           String?
+  role           String   @default("member")
+  styleProfile   Json     @default("{}") @map("style_profile")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@unique([organizationId, email])
+  @@map("users")
+}
+
 // WhatsApp Accounts (Connected WhatsApp Business Accounts)
 model WhatsAppAccount {
   id            String   @id @default(uuid())
@@ -14,11 +51,13 @@ model WhatsAppAccount {
   phoneNumber   String   @map("phone_number")
   status        String   @default("active") // active, inactive, disconnected
   syncState     Json     @default("{}") @map("sync_state")
+  trainingStatus String    @default("pending") @map("training_status") // pending, ingesting, analyzing, completed, failed
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   // Relations
-  messages WhatsAppMessage[]
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  messages     WhatsAppMessage[]
 
   @@unique([organizationId, phoneNumber])
   @@index([organizationId])
@@ -33,6 +72,7 @@ model WhatsAppMessage {
   from             String
   body             String
   aiIntent         String?  @map("ai_intent")
+  aiCategory       String?  @map("ai_category") // urgent, action_required, fyi
   timestamp        DateTime
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
@@ -42,7 +82,6 @@ model WhatsAppMessage {
 
   @@index([whatsappAccountId])
   @@index([whatsappAccountId, timestamp(sort: Desc)])
-  @@index([aiIntent])
   @@map("whatsapp_messages")
 }
 
@@ -50,13 +89,35 @@ model WhatsAppMessage {
 model AutomationRule {
   id              String   @id @default(uuid())
   organizationId  String   @map("organization_id")
-  trigger         String   // e.g., "keyword", "intent", "time", "contact"
+  name            String?
+  trigger         String   // e.g., "keyword", "intent", "time"
+  conditions      Json     @default("{}")
   responseTemplate String  @map("response_template")
   isActive        Boolean  @default(true) @map("is_active")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   @@index([organizationId])
   @@index([organizationId, isActive])
   @@map("automation_rules")
+}
+
+// Refresh Tokens for rotation/revocation
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
 }

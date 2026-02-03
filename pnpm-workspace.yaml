@@ -1,5 +1,5 @@
 packages:
-  - 'products/inboxpilot'
+  - 'packages/*'
   - 'products/chatflow/apps/*'
   - 'products/calendarsync/apps/*'
   - 'products/inboxpilot/apps/*'

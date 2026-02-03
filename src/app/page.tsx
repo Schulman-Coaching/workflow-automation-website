@@ -95,33 +95,39 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section className="px-8 py-24 bg-white">
+      <section className="px-8 py-24 bg-white overflow-hidden">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-24">
-          <div className="flex-1 space-y-8">
-            <h2 className="text-4xl font-bold text-gray-900 leading-tight">
-              Get Up and Running <br />
-              <span className="text-primary">in Minutes</span>
-            </h2>
+          <div className="flex-1 space-y-12">
+            <div className="space-y-4">
+              <span className="text-primary font-bold tracking-widest uppercase text-sm">The Platform Standard</span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                AI That Sounds <br />
+                <span className="text-primary underline decoration-accent underline-offset-8">Exactly Like You</span>
+              </h2>
+              <p className="text-xl text-gray-600 leading-relaxed">
+                Stop using generic bots. FlowStack's "User Voice" engine analyzes your historical emails and messages to clone your tone, formality, and linguistic patterns.
+              </p>
+            </div>
             <div className="space-y-8">
               <div className="flex gap-6">
-                <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold shrink-0">1</div>
+                <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center font-bold shrink-0 text-xl italic">1</div>
                 <div>
-                  <h4 className="text-xl font-bold mb-2">Connect Your Accounts</h4>
-                  <p className="text-gray-600 text-lg">One-click integration with Google, Outlook, and WhatsApp.</p>
+                  <h4 className="text-xl font-bold mb-2">Connect Your History</h4>
+                  <p className="text-gray-600 text-lg">One-click integration with Google, Outlook, and WhatsApp. We ingest your sent messages securely.</p>
                 </div>
               </div>
               <div className="flex gap-6">
-                <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold shrink-0">2</div>
+                <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center font-bold shrink-0 text-xl italic">2</div>
                 <div>
-                  <h4 className="text-xl font-bold mb-2">Define Your Voice</h4>
-                  <p className="text-gray-600 text-lg">Our AI analyzes your past history to learn how you communicate.</p>
+                  <h4 className="text-xl font-bold mb-2">Extract Your Voice</h4>
+                  <p className="text-gray-600 text-lg">Our local LLMs build a custom style profile—mapping your greetings, sign-offs, and professional tone.</p>
                 </div>
               </div>
               <div className="flex gap-6">
-                <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold shrink-0">3</div>
+                <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center font-bold shrink-0 text-xl italic">3</div>
                 <div>
-                  <h4 className="text-xl font-bold mb-2">Deploy Automation</h4>
-                  <p className="text-gray-600 text-lg">Turn on smart triage, auto-replies, and seamless scheduling.</p>
+                  <h4 className="text-xl font-bold mb-2">Deploy Automated Replies</h4>
+                  <p className="text-gray-600 text-lg">Turn on smart triage and auto-drafting. Your assistant handles the volume; you handle the strategy.</p>
                 </div>
               </div>
             </div>

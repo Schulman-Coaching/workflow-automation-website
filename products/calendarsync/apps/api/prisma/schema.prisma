@@ -7,66 +7,125 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Calendar Accounts (Connected Google/Outlook calendars)
-model CalendarAccount {
-  id            String   @id @default(uuid())
-  organizationId String  @map("organization_id")
-  provider      String   // Google, Outlook
-  email         String
-  syncToken     String?  @map("sync_token")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+// Organizations (Tenants)
+model Organization {
+  id               String   @id @default(uuid())
+  name             String
+  slug             String   @unique
+  settings         Json     @default("{}")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
   // Relations
-  bookingPages BookingPage[]
+  users            User[]
+  calendarAccounts CalendarAccount[]
+  bookingPages     BookingPage[]
+
+  @@map("organizations")
+}
+
+// Users
+model User {
+  id             String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  email          String
+  passwordHash   String   @map("password_hash")
+  name           String?
+  role           String   @default("member")
+  styleProfile   Json     @default("{}") @map("style_profile")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@unique([organizationId, email])
+  @@map("users")
+}
+
+// Calendar Accounts (Connected Google Calendar / Outlook Calendar)
+model CalendarAccount {
+  id                    String    @id @default(uuid())
+  organizationId        String    @map("organization_id")
+  userId                String    @map("user_id")
+  provider              String    // google, outlook
+  emailAddress          String    @map("email_address")
+  accessTokenEncrypted  String    @map("access_token_encrypted")
+  refreshTokenEncrypted String    @map("refresh_token_encrypted")
+  tokenExpiresAt        DateTime? @map("token_expires_at")
+  trainingStatus        String    @default("pending") @map("training_status")
+  isActive              Boolean   @default(true) @map("is_active")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   appointments Appointment[]
 
-  @@unique([organizationId, email, provider])
-  @@index([organizationId])
+  @@unique([organizationId, emailAddress])
   @@map("calendar_accounts")
 }
 
-// Booking Pages (Scheduling pages for users)
+// Booking Pages (Public scheduling links)
 model BookingPage {
   id              String   @id @default(uuid())
-  userId          String   @map("user_id")
-  slug            String
+  organizationId  String   @map("organization_id")
+  slug            String   @unique
   title           String
   description     String?
-  duration        Int      // Duration in minutes
-  availabilityRules Json   @map("availability_rules") // JSON object with availability configuration
+  durationMinutes Int      @default(30) @map("duration_minutes")
+  availability    Json     @default("{}") // Weekly schedule
+  isActive        Boolean  @default(true) @map("is_active")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   // Relations
-  calendarAccount CalendarAccount? @relation(fields: [calendarAccountId], references: [id])
-  calendarAccountId String? @map("calendar_account_id")
-  appointments     Appointment[]
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
 
-  @@unique([userId, slug])
-  @@index([userId])
   @@map("booking_pages")
 }
 
-// Appointments (Scheduled meetings)
+// Appointments
 model Appointment {
-  id            String   @id @default(uuid())
-  bookingPageId String   @map("booking_page_id")
-  guestEmail    String   @map("guest_email")
-  guestName     String?  @map("guest_name")
-  startTime     DateTime @map("start_time")
-  endTime       DateTime @map("end_time")
-  status        String   @default("scheduled") // scheduled, confirmed, cancelled, completed
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id                String   @id @default(uuid())
+  organizationId    String   @map("organization_id")
+  calendarAccountId String   @map("calendar_account_id")
+  bookingPageId     String?  @map("booking_page_id")
+  customerName      String   @map("customer_name")
+  customerEmail     String   @map("customer_email")
+  startTime         DateTime @map("start_time")
+  endTime           DateTime @map("end_time")
+  status            String   @default("scheduled") // scheduled, cancelled, completed
+  notes             String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
   // Relations
-  bookingPage    BookingPage    @relation(fields: [bookingPageId], references: [id], onDelete: Cascade)
-  calendarAccount CalendarAccount? @relation(fields: [calendarAccountId], references: [id])
-  calendarAccountId String? @map("calendar_account_id")
+  organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  calendarAccount CalendarAccount @relation(fields: [calendarAccountId], references: [id], onDelete: Cascade)
+  bookingPage     BookingPage?    @relation(fields: [bookingPageId], references: [id])
 
-  @@index([bookingPageId])
+  @@index([organizationId])
+  @@index([calendarAccountId])
   @@index([startTime])
-  @@index([status])
   @@map("appointments")
+}
+
+// Refresh Tokens
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
 }

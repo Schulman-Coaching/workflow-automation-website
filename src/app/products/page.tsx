@@ -7,23 +7,26 @@ export default function ProductsPage() {
     {
       id: 'inboxpilot',
       name: 'InboxPilot',
-      description: 'AI Email Assistant for SMBs.',
+      description: 'AI Email Assistant that drafts replies in your unique voice. Connect Gmail or Outlook and start saving hours every day.',
       icon: <Mail className="text-blue-600" size={32} />,
-      link: '/products/inboxpilot'
+      link: '/products/inboxpilot',
+      cta: 'Personalize My Email'
     },
     {
       id: 'chatflow',
       name: 'ChatFlow',
-      description: 'WhatsApp Automation for 24/7 service.',
+      description: 'WhatsApp Automation for 24/7 customer service. Ingest your business history to create an AI that knows your products and tone.',
       icon: <MessageSquare className="text-green-600" size={32} />,
-      link: '/products/chatflow'
+      link: '/products/chatflow',
+      cta: 'Automate My WhatsApp'
     },
     {
       id: 'calendarsync',
       name: 'CalendarSync',
-      description: 'Smart scheduling and meeting sync.',
+      description: 'Smart scheduling that understands your priorities. Booking pages that reflect your availability and conversational style.',
       icon: <Calendar className="text-orange-600" size={32} />,
-      link: '/products/calendarsync'
+      link: '/products/calendarsync',
+      cta: 'Sync My Calendar'
     }
   ];
 
@@ -38,13 +41,22 @@ export default function ProductsPage() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {products.map((p) => (
-            <div key={p.id} className="p-8 border border-gray-100 rounded-3xl hover:shadow-2xl transition-all group">
-              <div className="mb-6">{p.icon}</div>
-              <h2 className="text-3xl font-bold mb-4">{p.name}</h2>
-              <p className="text-gray-600 mb-8">{p.description}</p>
-              <a href={p.link} className="flex items-center gap-2 font-bold text-primary group-hover:gap-4 transition-all">
-                View Details <ArrowRight size={20} />
-              </a>
+            <div key={p.id} className="p-10 border border-gray-100 rounded-[2.5rem] bg-gray-50/50 hover:bg-white hover:shadow-2xl transition-all group flex flex-col justify-between">
+              <div>
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-8">
+                  {p.icon}
+                </div>
+                <h2 className="text-3xl font-bold mb-4">{p.name}</h2>
+                <p className="text-gray-600 mb-8 leading-relaxed">{p.description}</p>
+              </div>
+              <div className="space-y-4">
+                <button className="w-full bg-primary text-white py-4 rounded-2xl font-bold hover:opacity-90 transition-opacity">
+                  {p.cta}
+                </button>
+                <a href={p.link} className="flex items-center justify-center gap-2 font-bold text-gray-500 hover:text-primary transition-all">
+                  Documentation <ArrowRight size={20} />
+                </a>
+              </div>
             </div>
           ))}
         </div>

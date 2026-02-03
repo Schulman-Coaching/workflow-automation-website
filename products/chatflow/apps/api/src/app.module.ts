@@ -5,6 +5,8 @@ import { HealthModule } from './health/health.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
 import configuration from './config/configuration';
+import { AIModule } from './ai/ai.module';
+import { WhatsAppModule } from './whatsapp/whatsapp.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import configuration from './config/configuration';
 
     // Feature modules
     HealthModule,
+    AIModule,
+    WhatsAppModule,
   ],
 })
 export class AppModule {}
