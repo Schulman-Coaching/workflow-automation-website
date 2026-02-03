@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// WhatsApp Accounts (Connected WhatsApp Business Accounts)
+model WhatsAppAccount {
+  id            String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  phoneNumber   String   @map("phone_number")
+  status        String   @default("active") // active, inactive, disconnected
+  syncState     Json     @default("{}") @map("sync_state")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  messages WhatsAppMessage[]
+
+  @@unique([organizationId, phoneNumber])
+  @@index([organizationId])
+  @@index([status])
+  @@map("whatsapp_accounts")
+}
+
+// WhatsApp Messages
+model WhatsAppMessage {
+  id               String   @id @default(uuid())
+  whatsappAccountId String   @map("whatsapp_account_id")
+  from             String
+  body             String
+  aiIntent         String?  @map("ai_intent")
+  timestamp        DateTime
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  whatsappAccount WhatsAppAccount @relation(fields: [whatsappAccountId], references: [id], onDelete: Cascade)
+
+  @@index([whatsappAccountId])
+  @@index([whatsappAccountId, timestamp(sort: Desc)])
+  @@index([aiIntent])
+  @@map("whatsapp_messages")
+}
+
+// Automation Rules (Trigger-based responses)
+model AutomationRule {
+  id              String   @id @default(uuid())
+  organizationId  String   @map("organization_id")
+  trigger         String   // e.g., "keyword", "intent", "time", "contact"
+  responseTemplate String  @map("response_template")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([organizationId])
+  @@index([organizationId, isActive])
+  @@map("automation_rules")
+}

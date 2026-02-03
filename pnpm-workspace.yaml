@@ -1,0 +1,6 @@
+packages:
+  - 'products/inboxpilot'
+  - 'products/chatflow/apps/*'
+  - 'products/calendarsync/apps/*'
+  - 'products/inboxpilot/apps/*'
+  - 'products/inboxpilot/packages/*'

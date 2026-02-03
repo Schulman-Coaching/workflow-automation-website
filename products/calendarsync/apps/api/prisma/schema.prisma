@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Calendar Accounts (Connected Google/Outlook calendars)
+model CalendarAccount {
+  id            String   @id @default(uuid())
+  organizationId String  @map("organization_id")
+  provider      String   // Google, Outlook
+  email         String
+  syncToken     String?  @map("sync_token")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  bookingPages BookingPage[]
+  appointments Appointment[]
+
+  @@unique([organizationId, email, provider])
+  @@index([organizationId])
+  @@map("calendar_accounts")
+}
+
+// Booking Pages (Scheduling pages for users)
+model BookingPage {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  slug            String
+  title           String
+  description     String?
+  duration        Int      // Duration in minutes
+  availabilityRules Json   @map("availability_rules") // JSON object with availability configuration
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  calendarAccount CalendarAccount? @relation(fields: [calendarAccountId], references: [id])
+  calendarAccountId String? @map("calendar_account_id")
+  appointments     Appointment[]
+
+  @@unique([userId, slug])
+  @@index([userId])
+  @@map("booking_pages")
+}
+
+// Appointments (Scheduled meetings)
+model Appointment {
+  id            String   @id @default(uuid())
+  bookingPageId String   @map("booking_page_id")
+  guestEmail    String   @map("guest_email")
+  guestName     String?  @map("guest_name")
+  startTime     DateTime @map("start_time")
+  endTime       DateTime @map("end_time")
+  status        String   @default("scheduled") // scheduled, confirmed, cancelled, completed
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  bookingPage    BookingPage    @relation(fields: [bookingPageId], references: [id], onDelete: Cascade)
+  calendarAccount CalendarAccount? @relation(fields: [calendarAccountId], references: [id])
+  calendarAccountId String? @map("calendar_account_id")
+
+  @@index([bookingPageId])
+  @@index([startTime])
+  @@index([status])
+  @@map("appointments")
+}
