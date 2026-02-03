@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - FlowStack | Buy Hours for Your Automation Projects</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1e3a5f;
+            --navy-light: #2d4a6f;
+            --slate: #64748b;
+            --slate-light: #94a3b8;
+            --accent: #0ea5e9;
+            --accent-dark: #0284c7;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--navy);
+            line-height: 1.6;
+            background: var(--white);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            z-index: 1000;
+            padding: 0 2rem;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent), var(--navy));
+            border-radius: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--slate);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--navy);
+        }
+
+        .nav-cta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--navy);
+            border: 1px solid var(--gray-200);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--navy);
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        /* Hero Section */
+        .pricing-hero {
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
+            text-align: center;
+        }
+
+        .pricing-hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .pricing-hero p {
+            font-size: 1.25rem;
+            color: var(--slate);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .pricing-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--success-light);
+            color: #065f46;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* How It Works Mini */
+        .how-it-works-mini {
+            padding: 3rem 2rem;
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .how-it-works-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .how-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .how-step::after {
+            content: "→";
+            position: absolute;
+            right: -1.25rem;
+            top: 1.5rem;
+            color: var(--slate-light);
+            font-size: 1.5rem;
+        }
+
+        .how-step:last-child::after {
+            display: none;
+        }
+
+        .how-step-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gray-100);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.25rem;
+        }
+
+        .how-step h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .how-step p {
+            font-size: 0.875rem;
+            color: var(--slate);
+        }
+
+        /* Pricing Cards Section */
+        .pricing-section {
+            padding: 4rem 2rem 6rem;
+            background: var(--white);
+        }
+
+        .pricing-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.15);
+        }
+
+        .pricing-card.popular {
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.2);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: var(--white);
+            padding: 0.35rem 1rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .hours-amount {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .hours-label {
+            font-size: 1.25rem;
+            color: var(--slate);
+            margin-bottom: 1rem;
+        }
+
+        .price-total {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .price-per-hour {
+            font-size: 0.95rem;
+            color: var(--slate);
+            margin-top: 0.25rem;
+        }
+
+        .savings-tag {
+            display: inline-block;
+            background: var(--warning-light);
+            color: #92400e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+        }
+
+        .card-features {
+            margin-bottom: 2rem;
+        }
+
+        .card-features h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--slate);
+            margin-bottom: 1rem;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 0.6rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--navy);
+        }
+
+        .feature-icon {
+            color: var(--success);
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .feature-highlight {
+            background: var(--success-light);
+            color: #065f46;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 0.25rem;
+        }
+
+        .card-cta {
+            text-align: center;
+        }
+
+        .card-cta .btn {
+            width: 100%;
+        }
+
+        /* Expiration Note */
+        .expiration-note {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .expiration-note p {
+            font-size: 0.95rem;
+            color: var(--slate);
+        }
+
+        .expiration-note strong {
+            color: var(--navy);
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            padding: 5rem 2rem;
+            background: var(--gray-50);
+        }
+
+        .calculator-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.75rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--slate);
+        }
+
+        .calculator-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .calculator-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .calc-input-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .calc-input-group input,
+        .calc-input-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--navy);
+            background: var(--white);
+        }
+
+        .calc-input-group input:focus,
+        .calc-input-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .calc-result {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .calc-result-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .calc-result-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .calc-result-detail {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        /* What's Included Section */
+        .included-section {
+            padding: 5rem 2rem;
+            background: var(--white);
+        }
+
+        .included-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .included-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .included-card {
+            background: var(--gray-50);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--gray-100);
+        }
+
+        .included-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .included-card h3 span {
+            font-size: 1.25rem;
+        }
+
+        .included-card p {
+            color: var(--slate);
+            font-size: 0.95rem;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            padding: 5rem 2rem;
+            background: var(--gray-50);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .faq-item {
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .faq-question:hover {
+            background: var(--gray-50);
+        }
+
+        .faq-toggle {
+            font-size: 1.5rem;
+            color: var(--slate);
+            transition: transform 0.3s;
+        }
+
+        .faq-item.open .faq-toggle {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--slate);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            display: none;
+        }
+
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 2rem;
+            background: var(--navy);
+            text-align: center;
+        }
+
+        .cta-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-container h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .cta-container p {
+            font-size: 1.1rem;
+            color: var(--slate-light);
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-white {
+            background: var(--white);
+            color: var(--navy);
+        }
+
+        .btn-white:hover {
+            background: var(--gray-100);
+        }
+
+        .btn-outline-white {
+            background: transparent;
+            color: var(--white);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-outline-white:hover {
+            border-color: var(--white);
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: var(--white);
+            padding: 3rem 2rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--slate-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .footer-copy {
+            color: var(--slate);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto 3rem;
+            }
+
+            .how-it-works-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .how-step::after {
+                display: none;
+            }
+
+            .calculator-row {
+                grid-template-columns: 1fr;
+            }
+
+            .included-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .nav-links {
+                display: none;
+            }
+
+            .pricing-hero h1 {
+                font-size: 2rem;
+            }
+
+            .hours-amount {
+                font-size: 3rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="prototype-homepage.html" class="logo">
+                <div class="logo-icon"></div>
+                FlowStack
+            </a>
+            <ul class="nav-links">
+                <li><a href="#products">Products</a></li>
+                <li><a href="#solutions">Solutions</a></li>
+                <li><a href="#resources">Resources</a></li>
+                <li><a href="#" class="active">Pricing</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="#" class="btn btn-secondary">Log In</a>
+                <a href="#" class="btn btn-primary">Get a Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pricing-hero">
+        <h1>Simple, flexible pricing</h1>
+        <p>Buy hours in blocks and use them toward any automation project. Bigger blocks mean bigger savings.</p>
+        <div class="pricing-badge">
+            <span>✓</span> No subscriptions · No hidden fees · Pay for what you need
+        </div>
+    </section>
+
+    <!-- How It Works Mini -->
+    <section class="how-it-works-mini">
+        <div class="how-it-works-container">
+            <div class="how-step">
+                <div class="how-step-icon">🛒</div>
+                <h3>1. Buy Hours</h3>
+                <p>Choose a block that fits your project</p>
+            </div>
+            <div class="how-step">
+                <div class="how-step-icon">📋</div>
+                <h3>2. Scope Your Project</h3>
+                <p>We plan the work together</p>
+            </div>
+            <div class="how-step">
+                <div class="how-step-icon">🚀</div>
+                <h3>3. We Build It</h3>
+                <p>Hours are used as we deliver</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Cards -->
+    <section class="pricing-section">
+        <div class="pricing-container">
+            <div class="pricing-grid">
+                <!-- Starter Block -->
+                <div class="pricing-card">
+                    <div class="card-header">
+                        <div class="hours-amount">5</div>
+                        <div class="hours-label">hours</div>
+                        <div class="price-total">$750</div>
+                        <div class="price-per-hour">$150 per hour</div>
+                    </div>
+                    <div class="card-features">
+                        <h4>What's included</h4>
+                        <ul class="feature-list">
+                            <li><span class="feature-icon">✓</span> Use toward any automation project</li>
+                            <li><span class="feature-icon">✓</span> Kickoff call to scope your work</li>
+                            <li><span class="feature-icon">✓</span> Email support during project</li>
+                            <li><span class="feature-icon">✓</span> Detailed time tracking</li>
+                        </ul>
+                    </div>
+                    <div class="card-cta">
+                        <a href="#" class="btn btn-secondary btn-large">Buy 5 Hours</a>
+                    </div>
+                </div>
+
+                <!-- Growth Block - Popular -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="card-header">
+                        <div class="hours-amount">10</div>
+                        <div class="hours-label">hours</div>
+                        <div class="price-total">$1,350</div>
+                        <div class="price-per-hour">$135 per hour</div>
+                        <div class="savings-tag">Save $150</div>
+                    </div>
+                    <div class="card-features">
+                        <h4>What's included</h4>
+                        <ul class="feature-list">
+                            <li><span class="feature-icon">✓</span> Everything in Starter, plus:</li>
+                            <li><span class="feature-icon">✓</span> Priority scheduling <span class="feature-highlight">New</span></li>
+                            <li><span class="feature-icon">✓</span> Weekly progress updates</li>
+                            <li><span class="feature-icon">✓</span> Slack channel for communication</li>
+                            <li><span class="feature-icon">✓</span> 30-day post-delivery support</li>
+                        </ul>
+                    </div>
+                    <div class="card-cta">
+                        <a href="#" class="btn btn-primary btn-large">Buy 10 Hours</a>
+                    </div>
+                </div>
+
+                <!-- Scale Block -->
+                <div class="pricing-card">
+                    <div class="card-header">
+                        <div class="hours-amount">20</div>
+                        <div class="hours-label">hours</div>
+                        <div class="price-total">$2,400</div>
+                        <div class="price-per-hour">$120 per hour</div>
+                        <div class="savings-tag">Save $600</div>
+                    </div>
+                    <div class="card-features">
+                        <h4>What's included</h4>
+                        <ul class="feature-list">
+                            <li><span class="feature-icon">✓</span> Everything in Growth, plus:</li>
+                            <li><span class="feature-icon">✓</span> Dedicated project manager <span class="feature-highlight">New</span></li>
+                            <li><span class="feature-icon">✓</span> Bi-weekly strategy calls</li>
+                            <li><span class="feature-icon">✓</span> Training session for your team</li>
+                            <li><span class="feature-icon">✓</span> 60-day post-delivery support</li>
+                            <li><span class="feature-icon">✓</span> Priority bug fixes</li>
+                        </ul>
+                    </div>
+                    <div class="card-cta">
+                        <a href="#" class="btn btn-secondary btn-large">Buy 20 Hours</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiration Note -->
+            <div class="expiration-note">
+                <p><strong>When do hours expire?</strong> We recommend using your hours within 90 days, but we're flexible. Life happens — just let us know if you need an extension.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculator Section -->
+    <section class="calculator-section">
+        <div class="calculator-container">
+            <div class="section-header">
+                <h2>Estimate your project</h2>
+                <p>Get a rough idea of how many hours your automation might need</p>
+            </div>
+            <div class="calculator-card">
+                <div class="calculator-row">
+                    <div class="calc-input-group">
+                        <label for="project-type">What type of automation?</label>
+                        <select id="project-type" onchange="calculateEstimate()">
+                            <option value="3">Simple integration (2 tools)</option>
+                            <option value="6">Multi-step workflow</option>
+                            <option value="10">Complex automation with logic</option>
+                            <option value="15">Custom dashboard or reporting</option>
+                            <option value="20">Full process overhaul</option>
+                        </select>
+                    </div>
+                    <div class="calc-input-group">
+                        <label for="complexity">How many systems involved?</label>
+                        <select id="complexity" onchange="calculateEstimate()">
+                            <option value="1">1-2 apps</option>
+                            <option value="1.3">3-4 apps</option>
+                            <option value="1.6">5+ apps</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="calc-result">
+                    <div class="calc-result-label">Estimated hours needed</div>
+                    <div class="calc-result-value" id="estimate-result">3 - 5 hours</div>
+                    <div class="calc-result-detail" id="estimate-package">We'd recommend the <strong>Starter Block</strong></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What's Included Section -->
+    <section class="included-section">
+        <div class="included-container">
+            <div class="section-header">
+                <h2>Every block includes</h2>
+                <p>No matter which size you choose, you get these essentials</p>
+            </div>
+            <div class="included-grid">
+                <div class="included-card">
+                    <h3><span>📞</span> Kickoff Discovery Call</h3>
+                    <p>We start every engagement by understanding your workflow, pain points, and goals — so we build exactly what you need.</p>
+                </div>
+                <div class="included-card">
+                    <h3><span>⏱️</span> Transparent Time Tracking</h3>
+                    <p>See exactly how your hours are being used with detailed logs. No surprises, no hidden work.</p>
+                </div>
+                <div class="included-card">
+                    <h3><span>🔧</span> Testing & Quality Assurance</h3>
+                    <p>Every automation is thoroughly tested before handoff. We don't ship until it works reliably.</p>
+                </div>
+                <div class="included-card">
+                    <h3><span>📚</span> Documentation & Handoff</h3>
+                    <p>Get clear documentation so your team knows how to use, maintain, and extend your automations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="faq-container">
+            <div class="section-header">
+                <h2>Frequently asked questions</h2>
+                <p>Everything you need to know about how hour blocks work</p>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item open">
+                    <button class="faq-question">
+                        How do I know how many hours I need?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        Start with a quick call — we'll listen to what you're trying to automate and give you an honest estimate. If you're not sure, the 10-hour block is a popular choice because it covers most mid-sized projects with room to iterate. You can always buy more hours later if needed.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What happens if I don't use all my hours?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        We recommend using hours within 90 days, but we're flexible. If life gets busy or priorities change, just let us know — we can extend your timeframe or apply unused hours to future work. We're here to help, not to nickel-and-dime you.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can I use hours for different projects?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        Absolutely! Hours are flexible and can be used across multiple projects or automations. Start with one workflow, then use remaining hours to tackle the next. Many clients use their block to build a few smaller automations rather than one large one.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What if I need more hours mid-project?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        No problem — just buy another block. We'll keep working seamlessly. If your project scope grows, we'll flag it early so you can decide whether to expand or prioritize features. There's never a surprise invoice.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Do you offer custom enterprise packages?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        Yes! For larger engagements (50+ hours), we offer custom pricing with additional benefits like dedicated resources, custom SLAs, and volume discounts beyond our standard tiers. <a href="#" style="color: var(--accent);">Contact us</a> to discuss your needs.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What's your refund policy?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        If we haven't started work yet, you can get a full refund. Once work begins, unused hours remain available for future use. We stand behind our work — if you're not happy with a deliverable, we'll revise it until it meets your expectations, at no extra charge.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2>Not sure which block is right?</h2>
+            <p>Let's talk through your project. We'll recommend the right starting point — no pressure, no sales pitch.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-white btn-large">Schedule a Call</a>
+                <a href="#" class="btn btn-outline-white btn-large">Email Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <a href="prototype-homepage.html" class="logo" style="color: white;">
+                <div class="logo-icon"></div>
+                FlowStack
+            </a>
+            <div class="footer-links">
+                <a href="#">Products</a>
+                <a href="#">Resources</a>
+                <a href="#">About</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </div>
+            <div class="footer-copy">© 2026 FlowStack</div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.parentElement;
+                const wasOpen = item.classList.contains('open');
+
+                // Close all
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+
+                // Open clicked if it wasn't open
+                if (!wasOpen) {
+                    item.classList.add('open');
+                }
+            });
+        });
+
+        // Calculator
+        function calculateEstimate() {
+            const projectType = parseFloat(document.getElementById('project-type').value);
+            const complexity = parseFloat(document.getElementById('complexity').value);
+
+            const baseHours = projectType * complexity;
+            const minHours = Math.round(baseHours * 0.8);
+            const maxHours = Math.round(baseHours * 1.2);
+
+            document.getElementById('estimate-result').textContent = `${minHours} - ${maxHours} hours`;
+
+            let recommendation = '';
+            if (maxHours <= 5) {
+                recommendation = 'We\'d recommend the <strong>Starter Block</strong>';
+            } else if (maxHours <= 12) {
+                recommendation = 'We\'d recommend the <strong>Growth Block</strong>';
+            } else {
+                recommendation = 'We\'d recommend the <strong>Scale Block</strong>';
+            }
+
+            document.getElementById('estimate-package').innerHTML = recommendation;
+        }
+
+        // Initialize
+        calculateEstimate();
+    </script>
+</body>
+</html>
