@@ -96,6 +96,13 @@ class ApiClient {
     });
   }
 
+  async trainEmailAccount(accountId: string, lookbackDays: number = 90) {
+    return this.request<{ message: string }>(`/email-accounts/${accountId}/train`, {
+      method: 'POST',
+      body: JSON.stringify({ lookbackDays }),
+    });
+  }
+
   async disconnectEmailAccount(accountId: string) {
     return this.request<unknown>(`/email-accounts/${accountId}`, {
       method: 'DELETE',

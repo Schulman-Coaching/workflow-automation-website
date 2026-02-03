@@ -235,7 +235,7 @@ export class EmailService {
   }
 
   // Sync Methods
-  async syncEmails(accountId: string, organizationId: string) {
+  async syncEmails(accountId: string, organizationId: string, lookbackDays: number = 30) {
     const account = await this.prisma.emailAccount.findFirst({
       where: { id: accountId, organizationId },
     });
@@ -247,13 +247,13 @@ export class EmailService {
     const provider = this.getProvider(account.provider as 'gmail' | 'outlook');
     const accessToken = await this.getAccessToken(account);
 
-    // Fetch last 30 days of emails
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const query = `after:${Math.floor(thirtyDaysAgo.getTime() / 1000)}`;
+    // Fetch last N days of emails
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - lookbackDays);
+    const query = `after:${Math.floor(cutoffDate.getTime() / 1000)}`;
 
     const result = await provider.listEmails(accessToken, {
-      maxResults: 100,
+      maxResults: 100, // Still batching but can be called multiple times
       query,
     });
 
@@ -271,6 +271,24 @@ export class EmailService {
     });
 
     return { synced: savedCount };
+  }
+
+  async getSentEmailsForAnalysis(userId: string, limit: number = 50) {
+    return this.prisma.email.findMany({
+      where: {
+        emailAccount: { userId },
+        fromAddress: {
+          contains: (await this.prisma.user.findUnique({ where: { id: userId }, select: { email: true } }))?.email,
+        },
+      },
+      orderBy: { receivedAt: 'desc' },
+      take: limit,
+      select: {
+        subject: true,
+        bodyText: true,
+        receivedAt: true,
+      },
+    });
   }
 
   // Helper Methods

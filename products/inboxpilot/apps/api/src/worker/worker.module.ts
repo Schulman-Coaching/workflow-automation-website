@@ -4,6 +4,8 @@ import { WorkerService } from './worker.service';
 import { EmailSyncProcessor } from './processors/email-sync.processor';
 import { EmailTriageProcessor } from './processors/email-triage.processor';
 import { FollowUpProcessor } from './processors/follow-up.processor';
+import { EmailHistoryProcessor } from './processors/email-history.processor';
+import { StyleAnalysisProcessor } from './processors/style-analysis.processor';
 import { EmailModule } from '@/email/email.module';
 import { AIModule } from '@/ai/ai.module';
 
@@ -11,6 +13,8 @@ export const QUEUE_NAMES = {
   EMAIL_SYNC: 'email-sync',
   EMAIL_TRIAGE: 'email-triage',
   FOLLOW_UP: 'follow-up',
+  EMAIL_HISTORY: 'email-history',
+  STYLE_ANALYSIS: 'style-analysis',
 } as const;
 
 @Module({
@@ -20,6 +24,8 @@ export const QUEUE_NAMES = {
     EmailSyncProcessor,
     EmailTriageProcessor,
     FollowUpProcessor,
+    EmailHistoryProcessor,
+    StyleAnalysisProcessor,
     {
       provide: 'REDIS_CONNECTION',
       inject: [ConfigService],

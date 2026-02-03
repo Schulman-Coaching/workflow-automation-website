@@ -18,6 +18,17 @@ export interface EmailTriageJobData {
   organizationId: string;
 }
 
+export interface EmailHistoryJobData {
+  accountId: string;
+  organizationId: string;
+  lookbackDays: number;
+}
+
+export interface StyleAnalysisJobData {
+  userId: string;
+  organizationId: string;
+}
+
 export interface FollowUpJobData {
   organizationId: string;
 }
@@ -28,6 +39,8 @@ export class WorkerService implements OnModuleInit, OnModuleDestroy {
 
   private emailSyncQueue: Queue<EmailSyncJobData>;
   private emailTriageQueue: Queue<EmailTriageJobData>;
+  private emailHistoryQueue: Queue<EmailHistoryJobData>;
+  private styleAnalysisQueue: Queue<StyleAnalysisJobData>;
   private followUpQueue: Queue<FollowUpJobData>;
 
   constructor(
@@ -61,6 +74,32 @@ export class WorkerService implements OnModuleInit, OnModuleDestroy {
       },
     });
 
+    this.emailHistoryQueue = new Queue(QUEUE_NAMES.EMAIL_HISTORY, {
+      connection: this.redisConnection,
+      defaultJobOptions: {
+        removeOnComplete: 50,
+        removeOnFail: 200,
+        attempts: 2,
+        backoff: {
+          type: 'exponential',
+          delay: 10000,
+        },
+      },
+    });
+
+    this.styleAnalysisQueue = new Queue(QUEUE_NAMES.STYLE_ANALYSIS, {
+      connection: this.redisConnection,
+      defaultJobOptions: {
+        removeOnComplete: 50,
+        removeOnFail: 200,
+        attempts: 2,
+        backoff: {
+          type: 'exponential',
+          delay: 10000,
+        },
+      },
+    });
+
     this.followUpQueue = new Queue(QUEUE_NAMES.FOLLOW_UP, {
       connection: this.redisConnection,
       defaultJobOptions: {
@@ -84,6 +123,8 @@ export class WorkerService implements OnModuleInit, OnModuleDestroy {
     await Promise.all([
       this.emailSyncQueue?.close(),
       this.emailTriageQueue?.close(),
+      this.emailHistoryQueue?.close(),
+      this.styleAnalysisQueue?.close(),
       this.followUpQueue?.close(),
     ]);
     this.logger.log('Worker queues closed');
@@ -129,6 +170,24 @@ export class WorkerService implements OnModuleInit, OnModuleDestroy {
     this.logger.log(`Removed recurring sync for account ${accountId}`);
   }
 
+  // Email History Jobs
+  async scheduleHistoryIngestion(data: EmailHistoryJobData): Promise<string> {
+    const job = await this.emailHistoryQueue.add('ingest-history', data, {
+      jobId: `history-${data.accountId}-${Date.now()}`,
+    });
+    this.logger.debug(`Scheduled history ingestion job ${job.id} for account ${data.accountId}`);
+    return job.id!;
+  }
+
+  // Style Analysis Jobs
+  async scheduleStyleAnalysis(data: StyleAnalysisJobData): Promise<string> {
+    const job = await this.styleAnalysisQueue.add('analyze-style', data, {
+      jobId: `style-${data.userId}-${Date.now()}`,
+    });
+    this.logger.debug(`Scheduled style analysis job ${job.id} for user ${data.userId}`);
+    return job.id!;
+  }
+
   // Email Triage Jobs
   async scheduleEmailTriage(data: EmailTriageJobData): Promise<string> {
     const job = await this.emailTriageQueue.add('triage-email', data, {
@@ -161,15 +220,19 @@ export class WorkerService implements OnModuleInit, OnModuleDestroy {
 
   // Queue Stats
   async getQueueStats() {
-    const [syncCounts, triageCounts, followUpCounts] = await Promise.all([
+    const [syncCounts, triageCounts, historyCounts, styleCounts, followUpCounts] = await Promise.all([
       this.emailSyncQueue.getJobCounts(),
       this.emailTriageQueue.getJobCounts(),
+      this.emailHistoryQueue.getJobCounts(),
+      this.styleAnalysisQueue.getJobCounts(),
       this.followUpQueue.getJobCounts(),
     ]);
 
     return {
       emailSync: syncCounts,
       emailTriage: triageCounts,
+      emailHistory: historyCounts,
+      styleAnalysis: styleCounts,
       followUp: followUpCounts,
     };
   }

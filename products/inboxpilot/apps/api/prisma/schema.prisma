@@ -43,6 +43,7 @@ model User {
   role           String   @default("member")
   avatarUrl      String?  @map("avatar_url")
   settings       Json     @default("{}")
+  styleProfile   Json     @default("{}") @map("style_profile")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
@@ -69,6 +70,7 @@ model EmailAccount {
   tokenExpiresAt        DateTime? @map("token_expires_at")
   syncState             Json      @default("{}") @map("sync_state")
   lastSyncedAt          DateTime? @map("last_synced_at")
+  trainingStatus        String    @default("pending") @map("training_status") // pending, ingesting, analyzing, completed, failed
   isActive              Boolean   @default(true) @map("is_active")
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")

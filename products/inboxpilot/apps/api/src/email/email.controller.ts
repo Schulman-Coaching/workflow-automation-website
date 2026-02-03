@@ -13,6 +13,7 @@ import {
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from './email.service';
+import { WorkerService } from '@/worker/worker.service';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { Public } from '@/auth/decorators/public.decorator';
 import {
@@ -25,6 +26,7 @@ export class EmailController {
   constructor(
     private readonly emailService: EmailService,
     private readonly configService: ConfigService,
+    private readonly workerService: WorkerService,
   ) {}
 
   // OAuth Routes
@@ -47,7 +49,15 @@ export class EmailController {
     @Res() res: Response,
   ) {
     try {
-      await this.emailService.handleOAuthCallback('gmail', code, state);
+      const account = await this.emailService.handleOAuthCallback('gmail', code, state);
+      
+      // Schedule background history ingestion for new account
+      await this.workerService.scheduleHistoryIngestion({
+        accountId: account.id,
+        organizationId: account.organizationId,
+        lookbackDays: 90, // Start with 90 days for training
+      });
+
       const webUrl = this.configService.get<string>('app.webUrl');
       res.redirect(`${webUrl}/settings/email-accounts?connected=gmail`);
     } catch (error) {
@@ -77,7 +87,15 @@ export class EmailController {
     @Res() res: Response,
   ) {
     try {
-      await this.emailService.handleOAuthCallback('outlook', code, state);
+      const account = await this.emailService.handleOAuthCallback('outlook', code, state);
+
+      // Schedule background history ingestion for new account
+      await this.workerService.scheduleHistoryIngestion({
+        accountId: account.id,
+        organizationId: account.organizationId,
+        lookbackDays: 90,
+      });
+
       const webUrl = this.configService.get<string>('app.webUrl');
       res.redirect(`${webUrl}/settings/email-accounts?connected=outlook`);
     } catch (error) {
@@ -95,6 +113,21 @@ export class EmailController {
       user.organizationId,
     );
     return { success: true, data: accounts };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('email-accounts/:id/train')
+  async triggerTraining(
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserData,
+    @Body('lookbackDays') lookbackDays: number = 90,
+  ) {
+    await this.workerService.scheduleHistoryIngestion({
+      accountId: id,
+      organizationId: user.organizationId,
+      lookbackDays,
+    });
+    return { success: true, data: { message: 'Training scheduled' } };
   }
 
   @UseGuards(JwtAuthGuard)
