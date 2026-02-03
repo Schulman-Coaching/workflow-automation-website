@@ -4,9 +4,9 @@ export default () => {
   return {
     app: {
       env: process.env.NODE_ENV || 'development',
-      port: parseInt(process.env.PORT || '3000', 10),
-      apiUrl: process.env.API_URL || 'http://localhost:3000',
-      webUrl: process.env.WEB_URL || 'http://localhost:3001',
+      port: parseInt(process.env.PORT || '3006', 10),
+      apiUrl: process.env.API_URL || 'http://localhost:3006',
+      webUrl: process.env.WEB_URL || 'http://localhost:3007',
     },
 
     database: {

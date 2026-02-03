@@ -17,8 +17,8 @@ export function Navbar() {
         <a href="/resources" className="hover:text-primary">Resources</a>
       </div>
       <div className="flex space-x-4">
-        <button className="px-6 py-2 text-primary font-semibold hover:bg-gray-50 rounded-lg">Log In</button>
-        <button className="px-6 py-2 bg-primary text-white font-semibold rounded-lg hover:opacity-90">Get a Demo</button>
+        <a href="/login" className="px-6 py-2 text-primary font-semibold hover:bg-gray-50 rounded-lg">Log In</a>
+        <a href="/signup" className="px-6 py-2 bg-primary text-white font-semibold rounded-lg hover:opacity-90">Get Started</a>
       </div>
     </nav>
   );

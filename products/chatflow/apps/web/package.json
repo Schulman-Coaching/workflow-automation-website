@@ -1,11 +1,11 @@
 {
-  "name": "@inboxpilot/web",
+  "name": "@chatflow/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3003",
+    "dev": "next dev -p 3005",
     "build": "next build",
-    "start": "next start -p 3003",
+    "start": "next start -p 3005",
     "lint": "next lint"
   },
   "dependencies": {
@@ -20,7 +20,6 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
-    "@inboxpilot/shared": "workspace:*",
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",

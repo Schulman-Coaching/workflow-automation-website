@@ -1,5 +1,6 @@
 packages:
   - 'packages/*'
+  - 'products/core/apps/*'
   - 'products/chatflow/apps/*'
   - 'products/calendarsync/apps/*'
   - 'products/inboxpilot/apps/*'

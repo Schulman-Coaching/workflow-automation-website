@@ -4,8 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtStrategy, JwtAuthGuard } from '@flowstack/auth';
 
 @Module({
   imports: [
@@ -21,7 +20,15 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard],
+  providers: [
+    AuthService,
+    {
+      provide: JwtStrategy,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => new JwtStrategy(config.get('auth.jwtSecret')),
+    },
+    JwtAuthGuard,
+  ],
   exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}

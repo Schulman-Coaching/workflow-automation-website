@@ -1,0 +1,22 @@
+{
+  "name": "@flowstack/auth",
+  "version": "1.0.0",
+  "description": "Shared authentication logic for FlowStack",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.3.0",
+    "@nestjs/core": "^10.3.0",
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/passport": "^10.0.3",
+    "passport-jwt": "^4.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/passport-jwt": "^4.0.0"
+  }
+}

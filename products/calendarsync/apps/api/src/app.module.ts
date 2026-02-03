@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { HealthModule } from './health/health.module';
+import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
 import configuration from './config/configuration';
@@ -30,6 +31,7 @@ import { AIModule } from './ai/ai.module';
 
     // Feature modules
     HealthModule,
+    AuthModule,
     AIModule,
   ],
 })
