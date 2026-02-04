@@ -18,7 +18,11 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@flowstack/common": ["./packages/common/src"],
+      "@flowstack/ai": ["./packages/ai/src"],
+      "@flowstack/auth": ["./packages/auth/src"],
+      "@flowstack/billing": ["./packages/billing/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
