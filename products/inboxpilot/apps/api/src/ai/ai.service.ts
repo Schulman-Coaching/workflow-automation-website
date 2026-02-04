@@ -122,16 +122,19 @@ Respond with JSON only.`;
   }
 
   async analyzeUserStyle(userId: string, organizationId: string): Promise<any> {
+    const user = await this.prisma.user.findUnique({ 
+      where: { id: userId },
+      include: { organization: true }
+    });
+
     const sentEmails = await this.prisma.email.findMany({
       where: {
         emailAccount: { userId },
         organizationId,
-        fromAddress: {
-          contains: (await this.prisma.user.findUnique({ where: { id: userId }, select: { email: true } }))?.email,
-        },
+        fromAddress: { contains: user?.email },
       },
       orderBy: { receivedAt: 'desc' },
-      take: 50, // Increased sample size
+      take: 50,
       select: {
         bodyText: true,
         subject: true,
@@ -146,8 +149,14 @@ Respond with JSON only.`;
       content: `Subject: ${e.subject}\nBody: ${e.bodyText}`,
     }));
 
-    // Use the improved base analyzeStyle method
-    const styleProfile = await this.analyzeStyle(trainingData);
+    // CUSTOMIZATION FOR YOSSI NEWMAN / MBA SUPPLY
+    // We can pull these from the User settings or hardcode a "Master Logic"
+    const context = {
+      bio: `${user?.name}, Founder of ${user?.organization?.name}`,
+      industry: (user?.settings as any)?.industry || 'General Business',
+    };
+
+    const styleProfile = await this.analyzeStyle(trainingData, context);
     
     await this.prisma.user.update({
       where: { id: userId },

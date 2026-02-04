@@ -14,4 +14,6 @@ export interface UserVoiceContext {
   userId: string;
   organizationId: string;
   styleProfile: StyleProfile;
+  bio?: string; // e.g. "Yossi Newman, founder of MBA Supply"
+  industry?: string; // e.g. "Supply Chain / Wholesale"
 }

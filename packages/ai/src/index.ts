@@ -13,18 +13,22 @@ export class UserVoiceService {
     this.ollamaUrl = ollamaUrl;
   }
 
-  async analyzeStyle(data: TrainingDataPoint[]): Promise<StyleProfile> {
+  async analyzeStyle(data: TrainingDataPoint[], context?: { bio?: string, industry?: string }): Promise<StyleProfile> {
     const combinedContent = data.map(d => d.content).join('\n---\n');
     
     const prompt = `
     You are a Master Linguistic Profiler. Analyze the following 20-50 message samples from a user to extract a high-fidelity "User Voice" profile.
     
+    CONTEXT OVERRIDE:
+    User Bio: ${context?.bio || 'Not provided'}
+    Industry: ${context?.industry || 'Not provided'}
+
     CRITICAL ANALYSIS GOALS:
-    1. TONE: Identify the dominant emotional frequency (e.g., "Warm & Empathetic", "Ultra-Direct & Concise", "Academic & Precise").
-    2. FORMALITY: Determine the exact level (Scale 1-10: 1 is 'Hey!', 10 is 'Dear Distinguished Colleague').
+    1. TONE: Identify the dominant emotional frequency (e.g., "Warm & Empathetic", "Ultra-Direct & Concise").
+    2. FORMALITY: Determine the exact level (Scale 1-10).
     3. GREETINGS & SIGN-OFFS: List the top 3 most frequently used variants.
-    4. LINGUISTIC QUIRKS: Identify specific repetitive phrases, sentence structures (e.g., preference for active voice, use of emojis, or bullet points).
-    5. NEGATIVE CONSTRAINTS: Identify what this user NEVER says (e.g., avoids jargon, never uses "Best", etc.).
+    4. LINGUISTIC QUIRKS: Identify specific repetitive phrases, sentence structures, or industry-specific terminology.
+    5. NEGATIVE CONSTRAINTS: Identify what this user NEVER says.
 
     Format the response as a JSON object with the following keys:
     tone (string), formality (string), greetings (string[]), signOffs (string[]), commonPhrases (string[]), styleSummary (string), negativeConstraints (string[]).
