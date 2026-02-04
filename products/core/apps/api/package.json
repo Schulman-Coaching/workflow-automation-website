@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@flowstack/auth": "workspace:*",
+    "@flowstack/billing": "workspace:*",
     "@flowstack/common": "workspace:*",
     "@nestjs/common": "^10.3.0",
     "@nestjs/config": "^3.1.0",
