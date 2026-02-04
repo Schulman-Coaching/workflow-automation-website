@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build:packages": "pnpm --filter \"./packages/*\" build",
+    "build": "pnpm build:packages && next build",
     "start": "next start",
     "lint": "next lint"
   },
