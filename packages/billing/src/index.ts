@@ -52,6 +52,8 @@ export class BillingManager {
     cancelUrl: string;
     organizationId: string;
   }) {
+    // In production, the priceId should be the actual Stripe Price ID (e.g., price_123...)
+    // We expect the caller to pass the resolved Stripe Price ID from env vars
     return this.stripe.checkout.sessions.create({
       customer: params.customerId,
       mode: 'subscription',

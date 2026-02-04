@@ -37,6 +37,9 @@ Ensure the following are set in the platform's shared Environment Group:
 - `JWT_SECRET`: Central platform secret.
 - `CORE_API_URL`: `https://auth.yourdomain.com/api/v1`
 - `DATABASE_URL`: Product-specific database string.
+- `STRIPE_PRICE_STARTER`: price_...
+- `STRIPE_PRICE_PROFESSIONAL`: price_...
+- `STRIPE_PRICE_ENTERPRISE`: price_...
 
 ## 🛠️ Maintenance Automation
 - **CI/CD**: The `.github/workflows/main.yml` automatically tests all 8 services on every push.

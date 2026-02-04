@@ -25,9 +25,25 @@ export class BillingService {
     return PLATFORM_PLANS;
   }
 
-  async createCheckoutSession(organizationId: string, priceId: string, successUrl: string, cancelUrl: string) {
+  private getStripePriceId(planId: string): string {
+    const map: Record<string, string> = {
+      starter: this.config.get<string>('STRIPE_PRICE_STARTER'),
+      professional: this.config.get<string>('STRIPE_PRICE_PROFESSIONAL'),
+      enterprise: this.config.get<string>('STRIPE_PRICE_ENTERPRISE'),
+    };
+
+    const priceId = map[planId];
+    if (!priceId) {
+      throw new BadRequestException(`Invalid plan ID or Stripe Price ID not configured: ${planId}`);
+    }
+    return priceId;
+  }
+
+  async createCheckoutSession(organizationId: string, planId: string, successUrl: string, cancelUrl: string) {
     const org = await this.prisma.organization.findUnique({ where: { id: organizationId } });
     if (!org) throw new BadRequestException('Organization not found');
+
+    const priceId = this.getStripePriceId(planId);
 
     let customerId = org.stripeCustomerId;
     if (!customerId) {

@@ -5,6 +5,7 @@ This document serves as the final technical blueprint for the FlowStack platform
 ## 🔑 1. Security Keys (Generate these immediately)
 
 Use the provided `scripts/generate-secrets.sh` to create these.
+Use `scripts/setup-stripe-live.js` to automatically create products and prices in your Stripe account.
 
 | Variable | Description |
 |----------|-------------|
@@ -12,6 +13,9 @@ Use the provided `scripts/generate-secrets.sh` to create these.
 | `ENCRYPTION_MASTER_KEY` | 32-character string for OAuth token encryption. |
 | `STRIPE_SECRET_KEY` | Live secret key from Stripe dashboard. |
 | `STRIPE_WEBHOOK_SECRET` | Secret from Stripe webhook configuration. |
+| `STRIPE_PRICE_STARTER` | Stripe Price ID for the Starter Plan (e.g., price_...). |
+| `STRIPE_PRICE_PROFESSIONAL` | Stripe Price ID for the Professional Plan. |
+| `STRIPE_PRICE_ENTERPRISE` | Stripe Price ID for the Enterprise Plan. |
 | `GMAIL_CLIENT_SECRET` | Secret from Google Cloud Console. |
 | `WHATSAPP_ACCESS_TOKEN` | System user token from Meta Developer portal. |
 
