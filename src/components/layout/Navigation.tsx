@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap } from 'lucide-react';
+import { Zap, Sparkles } from 'lucide-react';
 
 export function Navbar() {
   return (
