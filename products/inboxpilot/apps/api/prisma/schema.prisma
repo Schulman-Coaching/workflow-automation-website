@@ -127,7 +127,7 @@ model Email {
   @@index([organizationId, emailAccountId])
   @@index([organizationId, receivedAt(sort: Desc)])
   @@index([organizationId, aiCategory])
-  @@index([organizationId, follow_up_status, follow_up_due_at])
+  @@index([organizationId, followUpStatus, followUpDueAt])
   @@map("emails")
 }
 
