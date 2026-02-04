@@ -7,6 +7,7 @@ import { PrismaModule } from './common/prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
 import configuration from './config/configuration';
 import { AIModule } from './ai/ai.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { AIModule } from './ai/ai.module';
     HealthModule,
     AuthModule,
     AIModule,
+    CalendarModule,
   ],
 })
 export class AppModule {}
