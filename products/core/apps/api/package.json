@@ -5,7 +5,9 @@
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",
-    "start": "nest start", "start:prod": "node dist/main"
+    "start": "nest start",
+    "start:prod": "node dist/main",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@flowstack/auth": "workspace:*",
@@ -25,6 +27,7 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.1",
     "rxjs": "^7.8.1",
+    "stripe": "^20.2.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

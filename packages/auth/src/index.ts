@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, ExecutionContext } from '@nestjs/com
 import { AuthGuard } from '@nestjs/passport';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Observable } from 'rxjs';
 
 export interface JwtPayload {
   sub: string;
@@ -32,7 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  canActivate(context: ExecutionContext) {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     return super.canActivate(context);
   }
 
