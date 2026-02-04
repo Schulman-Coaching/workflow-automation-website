@@ -78,7 +78,7 @@ export class WhatsAppService {
           // Find the internal account by phone number or business ID
           // For now, we'll try to find it by business ID or mapping
           // In a real scenario, you'd have a mapping of phoneNumberId to organization
-          const account = await this.prisma.whatsappAccount.findFirst({
+          const account = await this.prisma.whatsAppAccount.findFirst({
             where: {
               OR: [
                 { id: whatsappAccountId }, // If we store business ID as account ID
@@ -88,7 +88,7 @@ export class WhatsAppService {
           });
 
           if (account) {
-            await this.prisma.whatsappMessage.create({
+            await this.prisma.whatsAppMessage.create({
               data: {
                 from,
                 body,

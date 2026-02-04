@@ -27,14 +27,14 @@ export class StyleAnalysisProcessor extends WorkerHost {
     this.logger.log(`Starting WhatsApp style analysis for user ${userId}`);
 
     try {
-      await this.prisma.whatsappAccount.update({
+      await this.prisma.whatsAppAccount.update({
         where: { id: accountId },
         data: { trainingStatus: 'analyzing' },
       });
 
       await this.aiService.analyzeWhatsAppStyle(userId, organizationId);
 
-      await this.prisma.whatsappAccount.update({
+      await this.prisma.whatsAppAccount.update({
         where: { id: accountId },
         data: { trainingStatus: 'completed' },
       });
@@ -43,7 +43,7 @@ export class StyleAnalysisProcessor extends WorkerHost {
     } catch (error) {
       this.logger.error(`Failed WhatsApp style analysis for user ${userId}`, error.stack);
       
-      await this.prisma.whatsappAccount.update({
+      await this.prisma.whatsAppAccount.update({
         where: { id: accountId },
         data: { trainingStatus: 'failed' },
       });

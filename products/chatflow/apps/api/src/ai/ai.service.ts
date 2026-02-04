@@ -14,9 +14,9 @@ export class AIService extends UserVoiceService {
   }
 
   async analyzeWhatsAppStyle(userId: string, organizationId: string): Promise<StyleProfile> {
-    const messages = await this.prisma.whatsappMessage.findMany({
+    const messages = await this.prisma.whatsAppMessage.findMany({
       where: {
-        whatsappAccount: {
+        whatsAppAccount: {
           organizationId,
         },
       },
