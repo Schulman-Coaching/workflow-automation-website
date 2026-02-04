@@ -20,7 +20,7 @@ export class BillingService {
     const secretKey = this.configService.get<string>('billing.stripe.secretKey');
     if (secretKey) {
       this.stripe = new Stripe(secretKey, {
-        apiVersion: '2023-10-16',
+        apiVersion: '2025-01-27.clover' as any,
       });
     } else {
       this.logger.warn('Stripe secret key not configured');

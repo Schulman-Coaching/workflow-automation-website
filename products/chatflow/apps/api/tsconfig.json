@@ -19,10 +19,10 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@/*": ["src/*"],
-      "@flowstack/common": ["../../../packages/common/src"],
-      "@flowstack/auth": ["../../../packages/auth/src"],
-      "@flowstack/billing": ["../../../packages/billing/src"],
-      "@flowstack/ai": ["../../../packages/ai/src"]
+      "@flowstack/common": ["../../../../packages/common/src"],
+      "@flowstack/auth": ["../../../../packages/auth/src"],
+      "@flowstack/billing": ["../../../../packages/billing/src"],
+      "@flowstack/ai": ["../../../../packages/ai/src"]
     }
   }
 }
