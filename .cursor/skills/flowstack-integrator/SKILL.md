@@ -41,3 +41,10 @@ Every FlowStack product must support AI personalization:
 - [ ] Lints passing in the product directory.
 - [ ] Product added to root `pnpm-workspace.yaml`.
 - [ ] Cursor rules copied/adapted to the product's `.cursor/rules` directory.
+
+### 5. Deployment Automation
+To ensure the product is cloud-ready:
+- Ensure `apps/api/package.json` has a `start:prod` script: `"start:prod": "node dist/main"`.
+- Ensure `apps/web/package.json` has a `start` script: `"start": "next start -p $PORT"`.
+- Add the product to the platform's CI pipeline in `.github/workflows/main.yml`.
+- (Optional) Provision a product-specific database using the platform's IaC templates.
