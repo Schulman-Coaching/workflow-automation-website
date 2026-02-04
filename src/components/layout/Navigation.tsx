@@ -12,9 +12,9 @@ export function Navbar() {
       </div>
       <div className="hidden md:flex space-x-8 text-gray-600 font-medium">
         <a href="/products" className="hover:text-primary">Products</a>
+        <a href="/demo" className="text-primary font-bold bg-primary/5 px-3 py-1 rounded-full flex items-center gap-1"><Sparkles size={14} className="fill-primary" /> Experience Demo</a>
         <a href="/solutions" className="hover:text-primary">Solutions</a>
         <a href="/pricing" className="hover:text-primary">Pricing</a>
-        <a href="/resources" className="hover:text-primary">Resources</a>
       </div>
       <div className="flex space-x-4">
         <a href="/login" className="px-6 py-2 text-primary font-semibold hover:bg-gray-50 rounded-lg">Log In</a>
