@@ -20,6 +20,7 @@ model Organization {
   users            User[]
   calendarAccounts CalendarAccount[]
   bookingPages     BookingPage[]
+  appointments     Appointment[]
 
   @@map("organizations")
 }
