@@ -141,6 +141,9 @@ importers:
       '@prisma/client':
         specifier: ^5.8.0
         version: 5.22.0(prisma@5.22.0)
+      axios:
+        specifier: ^1.6.7
+        version: 1.13.4
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -532,6 +535,9 @@ importers:
       '@prisma/client':
         specifier: ^5.8.0
         version: 5.22.0(prisma@5.22.0)
+      axios:
+        specifier: ^1.6.7
+        version: 1.13.4
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -605,6 +611,9 @@ importers:
       '@prisma/client':
         specifier: ^5.8.0
         version: 5.22.0(prisma@5.22.0)
+      axios:
+        specifier: ^1.6.7
+        version: 1.13.4
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
