@@ -18,7 +18,7 @@ model Organization {
 
   // Relations
   users            User[]
-  whatsappAccounts WhatsAppAccount[]
+  whatsAppAccounts WhatsAppAccount[]
   automationRules  AutomationRule[]
 
   @@map("organizations")
@@ -68,7 +68,7 @@ model WhatsAppAccount {
 // WhatsApp Messages
 model WhatsAppMessage {
   id               String   @id @default(uuid())
-  whatsappAccountId String   @map("whatsapp_account_id")
+  whatsAppAccountId String   @map("whatsapp_account_id")
   from             String
   body             String
   aiIntent         String?  @map("ai_intent")
@@ -78,10 +78,10 @@ model WhatsAppMessage {
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   // Relations
-  whatsappAccount WhatsAppAccount @relation(fields: [whatsappAccountId], references: [id], onDelete: Cascade)
+  whatsAppAccount WhatsAppAccount @relation(fields: [whatsAppAccountId], references: [id], onDelete: Cascade)
 
-  @@index([whatsappAccountId])
-  @@index([whatsappAccountId, timestamp(sort: Desc)])
+  @@index([whatsAppAccountId])
+  @@index([whatsAppAccountId, timestamp(sort: Desc)])
   @@map("whatsapp_messages")
 }
 
