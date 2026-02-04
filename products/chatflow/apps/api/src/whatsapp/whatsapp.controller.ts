@@ -1,41 +1,52 @@
-import { Controller, Post, Body, UseGuards, Param, Get } from '@nestjs/common';
-import { AIService } from '../ai/ai.service';
-import { PrismaService } from '../common/prisma/prisma.service';
+import { Controller, Post, Body, Get, Query, Headers, Req, UnauthorizedException, Logger } from '@nestjs/common';
+import { WhatsAppService } from './whatsapp.service';
+import { ConfigService } from '@nestjs/config';
+import { Request } from 'express';
 
 @Controller('whatsapp')
 export class WhatsAppController {
+  private readonly logger = new Logger(WhatsAppController.name);
+
   constructor(
-    private aiService: AIService,
-    private prisma: PrismaService,
+    private whatsappService: WhatsAppService,
+    private configService: ConfigService,
   ) {}
 
-  @Post('webhook')
-  async handleWebhook(@Body() payload: any) {
-    // In a real app, verify the signature from Meta
-    const { from, body, whatsappAccountId } = payload;
-    
-    // Save message
-    const message = await this.prisma.whatsappMessage.create({
-      data: {
-        from,
-        body,
-        whatsappAccountId,
-        timestamp: new Date(),
-      }
-    });
+  @Get('webhook')
+  verifyWebhook(
+    @Query('hub.mode') mode: string,
+    @Query('hub.verify_token') token: string,
+    @Query('hub.challenge') challenge: string,
+  ) {
+    const verifyToken = this.configService.get<string>('whatsapp.verifyToken');
 
-    // Auto-reply logic could go here
-    return { success: true };
+    if (mode === 'subscribe' && token === verifyToken) {
+      this.logger.log('WhatsApp webhook verified successfully');
+      return challenge;
+    }
+
+    this.logger.warn('WhatsApp webhook verification failed');
+    throw new UnauthorizedException('Invalid verification token');
   }
 
-  @Post('accounts/:id/train')
-  async triggerTraining(
-    @Param('id') id: string,
-    @Body('userId') userId: string,
-    @Body('organizationId') organizationId: string,
+  @Post('webhook')
+  async handleWebhook(
+    @Body() payload: any,
+    @Headers('x-hub-signature-256') signature: string,
+    @Req() request: Request,
   ) {
-    // In a real app, get these from the request context (JWT)
-    await this.aiService.analyzeWhatsAppStyle(userId, organizationId);
-    return { success: true, message: 'WhatsApp style analysis completed' };
+    // In production, we should verify the signature
+    const isProduction = this.configService.get('app.env') === 'production';
+    
+    if (isProduction || signature) {
+      const rawBody = (request as any).rawBody?.toString();
+      if (!rawBody || !signature || !this.whatsappService.verifySignature(rawBody, signature)) {
+        this.logger.warn('WhatsApp webhook signature verification failed');
+        throw new UnauthorizedException('Invalid signature');
+      }
+    }
+
+    await this.whatsappService.processWebhookPayload(payload);
+    return { success: true };
   }
 }

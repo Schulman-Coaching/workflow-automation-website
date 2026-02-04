@@ -6,6 +6,9 @@ export default () => {
     const requiredKeys = [
       'JWT_SECRET',
       'DATABASE_URL',
+      'WHATSAPP_VERIFY_TOKEN',
+      'WHATSAPP_WEBHOOK_SECRET',
+      'WHATSAPP_ACCESS_TOKEN',
     ];
 
     for (const key of requiredKeys) {
@@ -51,7 +54,8 @@ export default () => {
 
     whatsapp: {
       webhookSecret: process.env.WHATSAPP_WEBHOOK_SECRET,
-      apiUrl: process.env.WHATSAPP_API_URL,
+      verifyToken: process.env.WHATSAPP_VERIFY_TOKEN,
+      apiUrl: process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v18.0',
       accessToken: process.env.WHATSAPP_ACCESS_TOKEN,
     },
   };
