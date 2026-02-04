@@ -5,6 +5,7 @@ export interface StyleProfile {
   signOffs?: string[];
   commonPhrases?: string[];
   styleSummary?: string;
+  negativeConstraints?: string[];
 }
 
 export type TrainingStatus = 'pending' | 'ingesting' | 'analyzing' | 'completed' | 'failed';

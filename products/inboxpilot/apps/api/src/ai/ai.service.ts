@@ -1,6 +1,8 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/common/prisma/prisma.service';
 import { OllamaService } from './ollama.service';
+import { UserVoiceService } from '@flowstack/ai';
+import { ConfigService } from '@nestjs/config';
 
 export interface TriageResult {
   category: 'urgent' | 'action_required' | 'fyi' | 'newsletter' | 'spam';
@@ -16,7 +18,7 @@ export interface DraftOptions {
 }
 
 @Injectable()
-export class AIService {
+export class AIService extends UserVoiceService {
   private readonly logger = new Logger(AIService.name);
 
   private readonly TRIAGE_SYSTEM_PROMPT = `You are an email triage assistant for a busy professional.
@@ -55,7 +57,10 @@ Write ONLY the email body text. Do not include subject line, greeting, or signat
   constructor(
     private prisma: PrismaService,
     private ollamaService: OllamaService,
-  ) {}
+    private config: ConfigService,
+  ) {
+    super(config.get<string>('ai.ollama.baseUrl', 'http://localhost:11434'));
+  }
 
   async triageEmail(emailId: string, organizationId: string): Promise<TriageResult> {
     const email = await this.prisma.email.findFirst({
@@ -126,7 +131,7 @@ Respond with JSON only.`;
         },
       },
       orderBy: { receivedAt: 'desc' },
-      take: 20,
+      take: 50, // Increased sample size
       select: {
         bodyText: true,
         subject: true,
@@ -137,51 +142,21 @@ Respond with JSON only.`;
       return { status: 'no_history' };
     }
 
-    const emailSamples = sentEmails
-      .map((e) => `Subject: ${e.subject}\nBody: ${e.bodyText?.substring(0, 500)}`)
-      .join('\n\n---\n\n');
+    const trainingData = sentEmails.map(e => ({
+      content: `Subject: ${e.subject}\nBody: ${e.bodyText}`,
+    }));
 
-    const analysisPrompt = `You are an expert linguist. Analyze the following email samples from a user to extract their unique communication style.
+    // Use the improved base analyzeStyle method
+    const styleProfile = await this.analyzeStyle(trainingData);
     
-Focus on:
-1. Greetings (formal, informal, direct)
-2. Sign-offs (regards, thanks, cheers, etc.)
-3. Tone (professional, friendly, brief, detailed)
-4. Common phrases or linguistic patterns
-5. Formality level
-
-Email Samples:
-${emailSamples}
-
-Respond ONLY with valid JSON containing these fields:
-{
-  "greetings": ["list", "of", "common", "greetings"],
-  "signOffs": ["list", "of", "common", "signoffs"],
-  "tone": "description of tone",
-  "commonPhrases": ["list", "of", "phrases"],
-  "formality": "low/medium/high",
-  "styleSummary": "brief overall summary"
-}`;
-
-    const response = await this.ollamaService.generate(analysisPrompt, 'You are a professional linguistic analyzer. Respond with JSON only.', {
-      useCache: false,
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        styleProfile: styleProfile as any,
+      },
     });
 
-    try {
-      const styleProfile = JSON.parse(response.content);
-      
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: {
-          styleProfile: styleProfile as any,
-        },
-      });
-
-      return styleProfile;
-    } catch (error) {
-      this.logger.error('Failed to parse style analysis response', error);
-      throw new Error('Failed to analyze user style');
-    }
+    return styleProfile;
   }
 
   async generateDraft(
@@ -237,14 +212,16 @@ ${email.bodyText || email.snippet || ''}
 ---
 
 Write a reply with:
-- Tone: ${options.tone}
 - Intent: ${intentInstructions[options.intent]}
 ${options.context ? `- Additional context: ${options.context}` : ''}
-${styleContext}
 
 Write only the email body.`;
 
-    const response = await this.ollamaService.generate(prompt, this.DRAFT_SYSTEM_PROMPT, {
+    const fullPrompt = user?.styleProfile 
+      ? this.injectStyle(prompt, user.styleProfile as any)
+      : prompt;
+
+    const response = await this.ollamaService.generate(fullPrompt, this.DRAFT_SYSTEM_PROMPT, {
       useCache: false, // Don't cache drafts
     });
 

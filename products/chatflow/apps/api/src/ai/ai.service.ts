@@ -19,7 +19,6 @@ export class AIService extends UserVoiceService {
         whatsappAccount: {
           organizationId,
         },
-        // In a real app, we'd filter for messages sent BY the user
       },
       orderBy: { timestamp: 'desc' },
       take: 100,

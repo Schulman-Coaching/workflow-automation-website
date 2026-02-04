@@ -18,10 +18,13 @@ export class AIService extends UserVoiceService {
     meetingTitle: string,
     profile: StyleProfile,
   ): Promise<string> {
-    const prompt = `userName: "${userName}", meetingTitle: "${meetingTitle}". Draft a short, inviting booking page description for this meeting in the user's voice.`;
+    const prompt = `userName: "${userName}", meetingTitle: "${meetingTitle}". 
+    Draft a short (1-2 sentences), highly inviting booking page description for this meeting. 
+    It should sound like the user is speaking directly to a valued client or partner. 
+    Avoid generic robotic filler.`;
     const fullPrompt = this.injectStyle(prompt, profile);
 
-    // Call Ollama for generation
-    return "This is an AI generated booking description matching your conversational style.";
+    // Call Ollama for generation (placeholder for actual implementation)
+    return "This is an AI generated booking description matching your unique conversational style.";
   }
 }

@@ -17,28 +17,31 @@ export class UserVoiceService {
     const combinedContent = data.map(d => d.content).join('\n---\n');
     
     const prompt = `
-    Analyze the following messages and extract a linguistic style profile for the sender.
-    Focus on:
-    1. Tone (e.g., Professional, Casual, Academic, Enthusiastic)
-    2. Formality (Scale of 1-10)
-    3. Common Greetings (List them)
-    4. Common Sign-offs (List them)
-    5. Typical Phrases or Idioms (List them)
-    6. Overall Style Summary (1-2 sentences)
+    You are a Master Linguistic Profiler. Analyze the following 20-50 message samples from a user to extract a high-fidelity "User Voice" profile.
+    
+    CRITICAL ANALYSIS GOALS:
+    1. TONE: Identify the dominant emotional frequency (e.g., "Warm & Empathetic", "Ultra-Direct & Concise", "Academic & Precise").
+    2. FORMALITY: Determine the exact level (Scale 1-10: 1 is 'Hey!', 10 is 'Dear Distinguished Colleague').
+    3. GREETINGS & SIGN-OFFS: List the top 3 most frequently used variants.
+    4. LINGUISTIC QUIRKS: Identify specific repetitive phrases, sentence structures (e.g., preference for active voice, use of emojis, or bullet points).
+    5. NEGATIVE CONSTRAINTS: Identify what this user NEVER says (e.g., avoids jargon, never uses "Best", etc.).
 
     Format the response as a JSON object with the following keys:
-    tone, formality (string like "Low", "Medium", "High"), greetings (array), signOffs (array), commonPhrases (array), styleSummary (string).
+    tone (string), formality (string), greetings (string[]), signOffs (string[]), commonPhrases (string[]), styleSummary (string), negativeConstraints (string[]).
 
-    Messages:
-    ${combinedContent.slice(0, 5000)} // Truncate to avoid context limit
+    Messages to Analyze:
+    ${combinedContent.slice(0, 10000)}
     `;
 
     try {
       const response = await axios.post(`${this.ollamaUrl}/api/generate`, {
-        model: 'llama3', // or another preferred model
+        model: 'llama3',
         prompt,
         stream: false,
-        format: 'json'
+        format: 'json',
+        options: {
+          temperature: 0.1, // High precision for analysis
+        }
       });
 
       return JSON.parse(response.data.response);
@@ -50,15 +53,25 @@ export class UserVoiceService {
 
   injectStyle(prompt: string, profile: StyleProfile): string {
     const styleContext = `
-    Match the sender's voice:
-    - Tone: ${profile.tone || 'Professional'}
-    - Formality: ${profile.formality || 'Medium'}
-    - Common Greetings: ${profile.greetings?.join(', ') || 'N/A'}
-    - Common Sign-offs: ${profile.signOffs?.join(', ') || 'N/A'}
-    - Typical Phrases: ${profile.commonPhrases?.join(', ') || 'N/A'}
-    - Style Summary: ${profile.styleSummary || 'N/A'}
+    ROLE: You are the user's AI Assistant. You MUST mirror their unique voice perfectly.
+    
+    USER STYLE PROFILE:
+    - Dominant Tone: ${profile.tone || 'Professional'}
+    - Formality Level: ${profile.formality || 'Medium'}
+    - Standard Greetings: ${profile.greetings?.join(', ') || 'N/A'}
+    - Standard Sign-offs: ${profile.signOffs?.join(', ') || 'N/A'}
+    - Signature Phrases: ${profile.commonPhrases?.join(', ') || 'N/A'}
+    - Core Linguistic Identity: ${profile.styleSummary || 'N/A'}
+    
+    STRICT CONSTRAINTS (NEVER DO THESE):
+    ${profile.negativeConstraints?.length ? profile.negativeConstraints.map(c => `- ${c}`).join('\n') : '- No generic filler phrases like "Hope this email finds you well" unless explicitly in the profile.'}
+    
+    INSTRUCTIONS:
+    1. Draft the response following the exact formality and tone above.
+    2. Use one of the standard greetings and sign-offs if appropriate.
+    3. If the user is typically brief, keep the response under 3 sentences.
     `;
 
-    return `${styleContext}\n\nTask: ${prompt}`;
+    return `${styleContext}\n\nUSER TASK: ${prompt}`;
   }
 }
